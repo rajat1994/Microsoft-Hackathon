@@ -50,51 +50,51 @@ export default class Classify extends Component {
   }
 
   async componentDidMount() {
-    // if (('indexedDB' in window)) {
-    //   try {
-    //     this.model = await tf.loadLayersModel('indexeddb://' + INDEXEDDB_KEY);
+    if (('indexedDB' in window)) {
+      try {
+        this.model = await tf.loadLayersModel('indexeddb://' + INDEXEDDB_KEY);
 
-    //     // Safe to assume tensorflowjs database and related object store exists.
-    //     // Get the date when the model was saved.
-    //     try {
-    //       const db = await openDB(INDEXEDDB_DB, 1, );
-    //       const item = await db.transaction(INDEXEDDB_STORE)
-    //                            .objectStore(INDEXEDDB_STORE)
-    //                            .get(INDEXEDDB_KEY);
-    //       const dateSaved = new Date(item.modelArtifactsInfo.dateSaved);
-    //       await this.getModelInfo();
-    //       console.log(this.modelLastUpdated);
-    //       if (!this.modelLastUpdated  || dateSaved >= new Date(this.modelLastUpdated).getTime()) {
-    //         console.log('Using saved model');
-    //       }
-    //       else {
-    //         this.setState({
-    //           modelUpdateAvailable: true,
-    //           showModelUpdateAlert: true,
-    //         });
-    //       }
+        // Safe to assume tensorflowjs database and related object store exists.
+        // Get the date when the model was saved.
+        try {
+          const db = await openDB(INDEXEDDB_DB, 1, );
+          const item = await db.transaction(INDEXEDDB_STORE)
+                               .objectStore(INDEXEDDB_STORE)
+                               .get(INDEXEDDB_KEY);
+          const dateSaved = new Date(item.modelArtifactsInfo.dateSaved);
+          await this.getModelInfo();
+          console.log(this.modelLastUpdated);
+          if (!this.modelLastUpdated  || dateSaved >= new Date(this.modelLastUpdated).getTime()) {
+            console.log('Using saved model');
+          }
+          else {
+            this.setState({
+              modelUpdateAvailable: true,
+              showModelUpdateAlert: true,
+            });
+          }
 
-    //     }
-    //     catch (error) {
-    //       console.warn(error);
-    //       console.warn('Could not retrieve when model was saved.');
-    //     }
+        }
+        catch (error) {
+          console.warn(error);
+          console.warn('Could not retrieve when model was saved.');
+        }
 
-    //   }
-    //   // If error here, assume that the object store doesn't exist and the model currently isn't
-    //   // saved in IndexedDB.
-    //   catch (error) {
-    //     console.log('Not found in IndexedDB. Loading and saving...');
-    //     console.log(error);
-    //     this.model = await tf.loadLayersModel(MODEL_PATH);
-    //     await this.model.save('indexeddb://' + INDEXEDDB_KEY);
-    //   }
-    // }
-    // If no IndexedDB, then just download like normal.
-    //else {
+      }
+      // If error here, assume that the object store doesn't exist and the model currently isn't
+      // saved in IndexedDB.
+      catch (error) {
+        console.log('Not found in IndexedDB. Loading and saving...');
+        console.log(error);
+        this.model = await tf.loadLayersModel(MODEL_PATH);
+        await this.model.save('indexeddb://' + INDEXEDDB_KEY);
+      }
+    }
+    //If no IndexedDB, then just download like normal.
+    else {
       console.warn('IndexedDB not supported.');
       this.model = await tf.loadLayersModel(MODEL_PATH);
-    //}
+    }
 
     this.setState({ modelLoaded: true });
     this.initWebcam();
